@@ -3,14 +3,22 @@ var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database('stock.db');
 
 exports.setupDB = function() {
-	var fileData = fs.readFile('./resources/ddl.sql', {encoding: 'utf-8'}, function(error, data){
+	console.log('setting up database');
+	var fileData = fs.readFile('./resources/ddl_options.sql', {encoding: 'utf-8'}, function(error, data){
 		if(error)console.log(error);
 		db.serialize(function() {
-			console.log('setting up database');
 			db.run(data);
-			console.log('setup finished');
+			console.log('creating table options');
 		});
 	});
+	var fileData = fs.readFile('./resources/ddl_stockvalues.sql', {encoding: 'utf-8'}, function(error, data){
+		if(error)console.log(error);
+		db.serialize(function() {
+			db.run(data);
+			console.log('creating table stockvalues');
+		});
+	});
+	console.log('setup finished');
 };
 
 exports.saveOption = function(option){
