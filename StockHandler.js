@@ -8,8 +8,8 @@ var tempPath = 'temp.csv';
 var fetchStockPrizes = function(){
 	console.log('downloading');
 	fileUtil.download('http://www.indices.cc/download/compositions/files/atpx.csv', tempPath, function(data) {
-		processFile(tempPath, function(path){
-			processPrizes(path);
+		processFile(tempPath, function(processedData){
+			processPrizes(processedData);
 		});
 	});
 	console.log('downloading done');
@@ -20,8 +20,8 @@ var processFile = function(filePath, callback) {
 	fs.readFile(filePath, {encoding: 'utf-8'}, function(error, data){
 		if(error)console.log('error in processFile: ' + error);
 		if(data && data.length > 0){
-			parser.processCSV(data, function(data){
-				callback(data);
+			parser.processCSV(data, function(csvData){
+				callback(csvData);
 			});
 		}	
 	});
@@ -39,7 +39,7 @@ var dbTest = function(){
 }
 
 var processPrizes = function(prizes){
-	if(prizes){
+	if(prizes && prizes.length > 0){
 		console.log('fetching options');
 		db.retrieveOptions(function(options){
 			if(options){
@@ -53,14 +53,25 @@ var processPrizes = function(prizes){
 				db.saveStockValue(prizes[i]);
 			}
 		});
+	}else{
+		console.log('prizes are undefinded!');
 	}
+}
+
+var nrOfCalls = 0;
+
+var doStuff = function() {
+	if(nrOfCalls == 0){
+		fetchStockPrizes();
+		dbTest();
+	}
+	nrOfCalls++;
 }
 
 db.setupDB();
 
 http.createServer(function (req, res) {
-  fetchStockPrizes();
-  dbTest();
+  doStuff();
   res.writeHead(200, {'Content-Type': 'text/plain'});
   res.end('Hello World\n');
 }).listen(1337, '127.0.0.1');
