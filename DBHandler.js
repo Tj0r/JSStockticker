@@ -44,6 +44,11 @@ exports.saveStockValue = function(stockvalue) {
 	});	
 };
 
-exports.retrieveStockValue = function(/*TODO: define interface*/) {
-
+exports.retrieveStockValue = function(id, from, to, callback) {
+	db.serialize(function(){
+		db.all('SELECT optionid as id, price, time FROM stockvalue where id = ? and time between ? and ?', [id, from, to], function(error, data){
+			if(error)console.log('error in retrieveOptions: ' + error);
+			callback(data);
+		});
+	});	
 };

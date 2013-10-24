@@ -1,0 +1,10 @@
+{
+  "name": "stock-ticker",
+  "description": "simple stock ticker server",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "3.4.3",
+	"sqlite3": "2.1.18"
+  }
+}

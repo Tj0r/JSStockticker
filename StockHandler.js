@@ -1,4 +1,7 @@
-﻿var http = require('http');
+﻿var express = require('express');
+var app = express();
+
+var http = require('http');
 var fs = require('fs');
 var db = require('./DBHandler.js');
 var fileUtil = require('./FileUtil.js');
@@ -29,7 +32,7 @@ var processFile = function(filePath, callback) {
 };
 
 var dbTest = function(){
-	var options = db.retrieveOptions(function(options){
+	db.retrieveOptions(function(options){
 		if(options){
 			for(var i = 0; i < options.length; i++){
 				console.log('dbtest id: ' + options[i].id);
@@ -58,26 +61,35 @@ var processPrizes = function(prizes){
 	}
 }
 
-var nrOfCalls = 0;
+setInterval(function(){
+	doStuff();
+}, 5*60000);
+
 
 var doStuff = function() {
-	if(nrOfCalls == 0){
-		fetchStockPrizes();
-		dbTest();
-	}
-	nrOfCalls++;
+	fetchStockPrizes();
+	dbTest();
 }
 
 db.setupDB();
 
-http.createServer(function (req, res) {
-  doStuff();
-  res.writeHead(200, {'Content-Type': 'text/plain'});
-  res.end('Hello World\n');
-}).listen(1337, '127.0.0.1');
-console.log('Server running at http://127.0.0.1:1337/');
+app.listen(1337);
 
+app.get('/options', function(req, res){
+	db.retrieveOptions(function(options){
+		if(options){
+			res.writeHead(200, {'Content-Type': 'application/json'});
+			res.end(JSON.stringify(options));
+		}
+	});
+});
 
-
-
-
+app.get('/prize', function(req, res){
+	var id = req.param('id');
+	var start = req.param('start');
+	var end = req.param('end');
+	db.retrieveStockValue(id, start, end, function(prizes){
+		res.writeHead(200, {'Content-Type': 'application/json'});
+		res.end(JSON.stringify(prizes));
+	});
+});
