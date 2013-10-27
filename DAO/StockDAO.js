@@ -1,7 +1,9 @@
+//setting up dependencies
 var fs = require('fs');
 var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database('stock.db');
 
+// sets up the database by running ddl scripts.
 exports.setupDB = function() {
 	console.log('setting up database');
 	var fileData = fs.readFile('./resources/ddl_options.sql', {encoding: 'utf-8'}, function(error, data){
@@ -44,11 +46,20 @@ exports.saveStockValue = function(stockvalue) {
 	});	
 };
 
-exports.retrieveStockValue = function(id, from, to, callback) {
-	db.serialize(function(){
-		db.all('SELECT optionid as id, price, time FROM stockvalue where id = ? and time between ? and ?', [id, from, to], function(error, data){
-			if(error)console.log('error in retrieveOptions: ' + error);
-			callback(data);
+exports.retrieveStockValues = function(id, from, to, callback) {
+	if(from != null && to != null){
+		db.serialize(function(){
+			db.all('SELECT optionid as id, price, time FROM stockvalue where id = ? and time between ? and ?', [id, from, to], function(error, data){
+				if(error)console.log('error in retrieveOptions: ' + error);
+				callback(data);
+			});
+		});	
+	}else{
+		db.serialize(function(){
+			db.all('SELECT optionid as id, price, time FROM stockvalue where id = ?', [id], function(error, data){
+				if(error)console.log('error in retrieveOptions: ' + error);
+				callback(data);
+			});
 		});
-	});	
+	}
 };

@@ -1,16 +1,16 @@
-﻿var express = require('express');
-var app = express();
-
-var http = require('http');
+﻿//setting up dependencies
 var fs = require('fs');
-var db = require('./DBHandler.js');
+var db = require('../DAO/StockDAO.js');
 var fileUtil = require('./FileUtil.js');
 var parser = require('./CSVParser.js');
 var tempPath = 'temp.csv';
 
+stockURL = 'http://www.indices.cc/download/compositions/files/atpx.csv';
+
+// fetches the current stock prizes from the vienna stock exchange.
 var fetchStockPrizes = function(){
 	console.log('downloading');
-	fileUtil.download('http://www.indices.cc/download/compositions/files/atpx.csv', tempPath, function(data) {
+	fileUtil.download(stockURL, tempPath, function(data) {
 		processFile(tempPath, function(processedData){
 			processPrizes(processedData);
 		});
@@ -18,6 +18,7 @@ var fetchStockPrizes = function(){
 	console.log('downloading done');
 };
 
+// reads the file passed through the filePath parameter, passes it through CSV parsing and passes the parsed data to the callback function.
 var processFile = function(filePath, callback) {
 	console.log('processing');
 	fs.readFile(filePath, {encoding: 'utf-8'}, function(error, data){
@@ -31,16 +32,7 @@ var processFile = function(filePath, callback) {
 	console.log('processing done');	
 };
 
-var dbTest = function(){
-	db.retrieveOptions(function(options){
-		if(options){
-			for(var i = 0; i < options.length; i++){
-				console.log('dbtest id: ' + options[i].id);
-			}
-		}
-	});
-}
-
+// store the stock prizes in the database. if no options exist in the database, they are stored before storing the prizes.
 var processPrizes = function(prizes){
 	if(prizes && prizes.length > 0){
 		console.log('fetching options');
@@ -61,35 +53,5 @@ var processPrizes = function(prizes){
 	}
 }
 
-setInterval(function(){
-	doStuff();
-}, 5*60000);
 
 
-var doStuff = function() {
-	fetchStockPrizes();
-	dbTest();
-}
-
-db.setupDB();
-
-app.listen(1337);
-
-app.get('/options', function(req, res){
-	db.retrieveOptions(function(options){
-		if(options){
-			res.writeHead(200, {'Content-Type': 'application/json'});
-			res.end(JSON.stringify(options));
-		}
-	});
-});
-
-app.get('/prize', function(req, res){
-	var id = req.param('id');
-	var start = req.param('start');
-	var end = req.param('end');
-	db.retrieveStockValue(id, start, end, function(prizes){
-		res.writeHead(200, {'Content-Type': 'application/json'});
-		res.end(JSON.stringify(prizes));
-	});
-});

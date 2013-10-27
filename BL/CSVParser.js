@@ -5,6 +5,7 @@ exports.processCSV = function(data, callback){
 	});
 };
 
+// parses a CSV file's content and transforms it into an array for further processing.
 var CSVToArray = function ( strData, strDelimiter ){
 	strDelimiter = (strDelimiter || ",");
 	var objPattern = new RegExp(
@@ -43,6 +44,7 @@ var CSVToArray = function ( strData, strDelimiter ){
 	return( arrData );
 }
 
+// transforms the output of the CSVtoArray function into JSON format.
 var ArrayToJSON = function(array, callback){
 	var list = new Array();
 	var time = new Date();
