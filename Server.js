@@ -13,6 +13,7 @@ db.setupDB();
 
 // starts a timer which continuously querys for the current stock prizes
 setInterval(function(){
+	console.log('timer running now');
 	sh.fetchStockPrizes();
 }, 5*60000);
 

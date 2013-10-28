@@ -8,7 +8,7 @@ var tempPath = 'temp.csv';
 stockURL = 'http://www.indices.cc/download/compositions/files/atpx.csv';
 
 // fetches the current stock prizes from the vienna stock exchange.
-var fetchStockPrizes = function(){
+exports.fetchStockPrizes = function(){
 	console.log('downloading');
 	fileUtil.download(stockURL, tempPath, function(data) {
 		processFile(tempPath, function(processedData){
