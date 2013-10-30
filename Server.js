@@ -35,7 +35,7 @@ app.get('/prize', function(req, res){
 	if(id && id != null && id != ''){
 		if(start && start != null && start != ''){
 			if(end && end != null && end != ''){
-				db.retrieveStockValues(id, null, null, function(prizes){
+				db.retrieveStockValues(id, start, end, function(prizes){
 					res.writeHead(200, {'Content-Type': 'application/json'});
 					res.end(JSON.stringify(prizes));
 				});
@@ -43,7 +43,7 @@ app.get('/prize', function(req, res){
 				res.send(500, 'Illegal parameters passed! Make sure to pass both start and end!');
 			}
 		}else{
-			db.retrieveStockValues(id, start, end, function(prizes){
+			db.retrieveStockValues(id, null, null, function(prizes){
 				res.writeHead(200, {'Content-Type': 'application/json'});
 				res.end(JSON.stringify(prizes));
 			});
