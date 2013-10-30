@@ -19,6 +19,8 @@ setInterval(function(){
 
 // defines a web api method which returns the currently stored stock options.
 app.get('/options', function(req, res){
+	res.header('Access-Control-Allow-Origin', '*');
+	console.log('options called');
 	db.retrieveOptions(function(options){
 		if(options){
 			res.writeHead(200, {'Content-Type': 'application/json'});
@@ -29,6 +31,7 @@ app.get('/options', function(req, res){
 
 // defines a web api method which returns a specific stock option's values.
 app.get('/prize', function(req, res){
+	res.header('Access-Control-Allow-Origin', '*');
 	var id = req.param('id');
 	var start = req.param('start');
 	var end = req.param('end');
