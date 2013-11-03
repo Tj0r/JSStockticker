@@ -10,6 +10,7 @@ var port = 1337;
 
 app.listen(port);
 db.setupDB();
+sh.fetchStockPrizes();
 
 // starts a timer which continuously querys for the current stock prizes
 setInterval(function(){

@@ -1,4 +1,5 @@
 create table if not exists options(
 	id  TEXT PRIMARY KEY NOT NULL,
-	name TEXT NOT NULL
+	name TEXT NOT NULL,
+	symbol TEXT NOT NULL
 );

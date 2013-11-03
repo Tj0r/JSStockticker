@@ -9,8 +9,13 @@ exports.setupDB = function() {
 	var fileData = fs.readFile('./resources/ddl_options.sql', {encoding: 'utf-8'}, function(error, data){
 		if(error)console.log(error);
 		db.serialize(function() {
+			//db.run('drop table options');
+			//db.run('drop table stockvalue');
 			db.run(data);
 			console.log('creating table options');
+		});
+		exports.retrieveOptions(function(op){
+			console.log('after-serialize-length: ' + op.length);
 		});
 	});
 	var fileData = fs.readFile('./resources/ddl_stockvalues.sql', {encoding: 'utf-8'}, function(error, data){
@@ -20,19 +25,31 @@ exports.setupDB = function() {
 			console.log('creating table stockvalues');
 		});
 	});
+	var fileData = fs.readFile('./resources/dml_options.sql', {encoding: 'utf-8'}, function(error, data){
+		if(error)console.log(error);
+		data = data.replace('\n', '');
+		var lines = data.split(';');
+		for(var i = 0; i < lines.length; i++){
+			db.serialize(function(){
+				console.log('line: ' +  lines[i].toString());
+				var query = lines[i].toString();
+				if(query != '')db.run(query);				
+			});
+		}
+	});
 	console.log('setup finished');
 };
 
 exports.saveOption = function(option){
 	db.serialize(function(){
 		console.log('saving option, id: ' + option.id);
-		db.run('INSERT INTO options VALUES (?, ?)', [option.id, option.name]);
+		db.run('INSERT INTO options VALUES (?, ?, ?)', [option.id, option.name, options.symbol]);
 	});
 };
 
 exports.retrieveOptions = function(callback){
 	db.serialize(function(){
-		db.all('SELECT id, name FROM options', function(error, data){
+		db.all('SELECT id, name, symbol FROM options', function(error, data){
 			if(error)console.log('error in retrieveOptions: ' + error);
 			callback(data);
 		});

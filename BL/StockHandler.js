@@ -5,21 +5,37 @@ var fileUtil = require('./FileUtil.js');
 var parser = require('./CSVParser.js');
 var tempPath = 'temp.csv';
 
-stockURL = 'http://www.indices.cc/download/compositions/files/atpx.csv';
+var stockURL = 'http://download.finance.yahoo.com/d/quotes.csv?s=';//'http://www.indices.cc/download/compositions/files/atpx.csv';
+var stockParams = '&f=sl1t1';
 
 // fetches the current stock prizes from the vienna stock exchange.
 exports.fetchStockPrizes = function(){
 	console.log('downloading');
-	fileUtil.download(stockURL, tempPath, function(data) {
-		processFile(tempPath, function(processedData){
-			processPrizes(processedData);
-		});
+	db.retrieveOptions(function(options){
+		if(options){
+			var url = stockURL
+			for(var i = 0; i < options.length; i++){
+				url += options[i].symbol;
+				if(i < options.length-1){
+					url += '+';
+				}
+			}
+			url = url + stockParams;
+			console.log('URL: ' + url);
+			fileUtil.download(url, tempPath, function(data) {
+				processFile(tempPath, options, function(processedData){
+					processPrizes(processedData);
+					console.log('downloading done');
+				});
+			});	
+		}else{
+			console.log('ERROR: no options found in database');
+		}
 	});
-	console.log('downloading done');
 };
 
 // reads the file passed through the filePath parameter, passes it through CSV parsing and passes the parsed data to the callback function.
-var processFile = function(filePath, callback) {
+var processFile = function(filePath, options, callback) {
 	console.log('processing');
 	fs.readFile(filePath, {encoding: 'utf-8'}, function(error, data){
 		if(error)console.log('error in processFile: ' + error);

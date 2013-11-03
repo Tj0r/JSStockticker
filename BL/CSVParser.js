@@ -1,5 +1,7 @@
+var db = require('../DAO/StockDAO.js');
+
 exports.processCSV = function(data, callback){
-	var arrayData = CSVToArray(data, ';');
+	var arrayData = CSVToArray(data, ',');
 	ArrayToJSON(arrayData, function(jsonData){
 		callback(jsonData);
 	});
@@ -46,13 +48,20 @@ var CSVToArray = function ( strData, strDelimiter ){
 
 // transforms the output of the CSVtoArray function into JSON format.
 var ArrayToJSON = function(array, callback){
-	var list = new Array();
-	var time = new Date();
-	time = time.getTime();
-	for(var i = 0; i < array.length; i++){
-		if(array[i][3] === 'AT'){
-			list.push({id: array[i][1], name: array[i][0], prize: array[i][10], time: time});
+	db.retrieveOptions(function(options){
+		if(options){
+			var list = new Array();
+			var time = new Date();
+			time = time.getTime();
+			console.log(array.length);
+			for(var i = 0; i < options.length; i++){
+				if(array[i][0] === options[i].symbol){
+					list.push({id: options[i].id, name: options[i].name, prize: array[i][1], time: time});	
+				}else{
+					console.log('an error occured during parsing, object id is '  + array[i][0] + ' but should be ' + options[i].symbol);
+				}
+			}
 		}
-	}
-	callback(list);
+		callback(list);
+	});
 };
