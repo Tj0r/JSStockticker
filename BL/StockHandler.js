@@ -8,7 +8,7 @@ var tempPath = 'temp.csv';
 var stockURL = 'http://download.finance.yahoo.com/d/quotes.csv?s=';//'http://www.indices.cc/download/compositions/files/atpx.csv';
 var stockParams = '&f=sl1t1';
 
-// fetches the current stock prizes from the vienna stock exchange.
+// fetches the current stock prizes from yahoo! finance.
 exports.fetchStockPrizes = function(){
 	console.log('downloading');
 	db.retrieveOptions(function(options){
@@ -68,6 +68,3 @@ var processPrizes = function(prizes){
 		console.log('prizes are undefinded!');
 	}
 }
-
-
-

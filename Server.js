@@ -21,7 +21,6 @@ setInterval(function(){
 // defines a web api method which returns the currently stored stock options.
 app.get('/options', function(req, res){
 	res.header('Access-Control-Allow-Origin', '*');
-	console.log('options called');
 	db.retrieveOptions(function(options){
 		if(options){
 			res.writeHead(200, {'Content-Type': 'application/json'});
