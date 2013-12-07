@@ -13,6 +13,7 @@ exports.setupDB = function() {
 	setupDDL('./resources/ddl_stockvalues.sql');
 	setupDDL('./resources/ddl_users.sql');
 	setupDDL('./resources/ddl_preferences.sql');
+	setupDDL('./resources/ddl_sessions.sql');
 	
 	var fileData = fs.readFile('./resources/dml_options.sql', {encoding: 'utf-8'}, function(error, data){
 		if(error)console.log(error);
@@ -29,7 +30,7 @@ exports.setupDB = function() {
 	console.log('setup finished');
 };
 
-var setupDDL(fileLocation) {
+var setupDDL = function(fileLocation) {
 	var fileData = fs.readFile(fileLocation, {encoding: 'utf-8'}, function(error, data){
 		if(error)console.log(error);
 		db.serialize(function() {

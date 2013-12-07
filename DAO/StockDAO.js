@@ -43,3 +43,24 @@ exports.retrieveStockValues = function(id, from, to, callback) {
 		});
 	}
 };
+
+exports.savePreferences = function(option, user) {
+	db.serialize(function(){
+		db.run('INSERT INTO preferences VALUES (?, ?)', [option, user]);
+	});
+};
+
+exports.retrievePreferences = function(id, callback) {
+	db.serialize(function(){
+		db.all('SELECT optionid, userid FROM preferences WHERE userid = ?', [id], function(error, data){
+			if(error)callback(error, null);
+			callback(null, data);
+		});
+	});
+};
+
+exports.deletePreferences = function(id) {
+	db.serialize(function(){
+		db.run('DELETE FROM preferences WHERE userid = ?', [id]);
+	});
+};
