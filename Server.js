@@ -98,10 +98,6 @@ app.get('/prize/:id', function(req, res){
 });
 
 app.get('/login', passport.authenticate('local'), function(req, res){
-	var name = req.param('name');
-	var pwd = req.param('pwd');
-	console.log(name)
-	console.log(pwd);
 	if(req.user && req.user != null){
 		res.send(200, 'Successfully logged in. Take a seat, have a cookie.');
 	}else{
@@ -110,13 +106,11 @@ app.get('/login', passport.authenticate('local'), function(req, res){
 });
 
 app.post('/login', function(req, res){
-	var name = req.body['name'];
-	var pwd = req.body['pwd'];
-	console.log(name);
-	console.log(pwd);
+	var name = req.body['username'];
+	var pwd = req.body['password'];
 	if(name && pwd){
 		auth.registerUser(name, pwd);
-		res.send(200, 'user created');
+		res.send(201, 'user created');
 	}else{
 		res.send(500, 'Missing parameters');
 	}
@@ -135,6 +129,7 @@ app.get('/logout', function(req, res){
 app.get('/preferences', function(req, res){
 	if(req.user && req.user != null){
 		stockDB.retrievePreferences(req.user.name, function(error, data){
+			if(error)res.send(404, 'No preferences found!');
 			sendData(res, data);
 		});
 	}else{
@@ -143,12 +138,13 @@ app.get('/preferences', function(req, res){
 });
 
 app.post('/preferences', function(req, res){
-	if(req.user && req.user != null){
-		var preferences = eval(req.body);
+	if(req.user && req.user != null && req.user.name != null){
+		var preferences = req.body;
 		stockDB.deletePreferences(req.user.name);
 		for(var i = 0; i < preferences.length; i++){
 			stockDB.savePreferences(preferences[i].id, req.user.name);
 		}
+		res.send(201, null);
 	}else{
 		res.send(403, null);
 	}
