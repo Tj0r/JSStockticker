@@ -3,6 +3,7 @@ var express = require('express'),
 	http = require('http'),
 	passport = require('passport'),
 	LocalStrategy = require('passport-local').Strategy,
+	FacebookStrategy = require('passport-facebook').Strategy,
 	sh = require('./BL/StockHandler.js'),
 	stockDB = require('./DAO/StockDAO.js'),
 	baseDB = require('./DAO/BaseDAO.js'),
@@ -32,6 +33,26 @@ passport.use(new LocalStrategy(
 				});
 			}
 		});
+	}
+));
+
+passport.use(new FacebookStrategy({
+		clientID: '544658165615242',
+		clientSecret: 'b0836368a9594e134fc61ca951adfbf4',
+		callbackURL: 'http://127.0.0.1:1337/login/oauth/callback'
+	},
+	function(accessToken, refreshToken, profile, done) {
+		if(profile && profile != null){
+			auth.createSession(profile.id, function(error, data){
+				if(error)return done(error);
+				if(!data)return done(null, false);
+				var user = { name: profile.id, pwd: data };
+				console.log(user);
+				return done(null, user);
+			});
+		}else{
+			done(null, false);
+		}
 	}
 ));
 
@@ -117,9 +138,14 @@ app.post('/login', function(req, res){
 	
 });
 
+app.get('/login/oauth', passport.authenticate('facebook'));
+
+app.get('/login/oauth/callback', passport.authenticate('facebook', {successRedirect: '/preferences', failureRedirect: '/preferences'}));
+
 app.get('/logout', function(req, res){
 	if(req.user.name && req.user.name != null){
 		auth.destroySession(req.user.name);
+		req.logout();
 		res.send(200, 'Logout sucessful');
 	}else{
 		res.send(403, null);

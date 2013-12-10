@@ -31,6 +31,7 @@ exports.findUser = function(username, password, callback) {
 	});
 };
 
+// creates a new session token for the currently logged in user
 exports.createSession = function(name, callback) {
 	var cipher = crypto.createCipher('aes-256-cbc', key);
 	var date = new Date();
@@ -41,10 +42,12 @@ exports.createSession = function(name, callback) {
 	callback(null, encrypted);
 };
 
+// destroys a specific user's session tokens
 exports.destroySession = function(name) {
 	userDB.deleteSessionByUserName(name);
 };
 
+// retrieves a session by it's token key
 exports.findSessionByKey = function(key, callback) {
 	userDB.findSession(key, callback);
 };

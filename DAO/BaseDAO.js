@@ -14,6 +14,7 @@ exports.setupDB = function() {
 	setupDDL('./resources/ddl_users.sql');
 	setupDDL('./resources/ddl_preferences.sql');
 	setupDDL('./resources/ddl_sessions.sql');
+	setupDDL('./resources/ddl_fbusers.sql');
 	
 	var fileData = fs.readFile('./resources/dml_options.sql', {encoding: 'utf-8'}, function(error, data){
 		if(error)console.log(error);
