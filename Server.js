@@ -119,6 +119,7 @@ app.get('/prize/:id', function(req, res){
 });
 
 app.get('/login', passport.authenticate('local'), function(req, res){
+	response.header('Access-Control-Allow-Origin', '*');
 	if(req.user && req.user != null){
 		res.send(200, 'Successfully logged in. Take a seat, have a cookie.');
 	}else{
@@ -129,6 +130,7 @@ app.get('/login', passport.authenticate('local'), function(req, res){
 app.post('/login', function(req, res){
 	var name = req.body['username'];
 	var pwd = req.body['password'];
+	response.header('Access-Control-Allow-Origin', '*');
 	if(name && pwd){
 		auth.registerUser(name, pwd);
 		res.send(201, 'user created');
