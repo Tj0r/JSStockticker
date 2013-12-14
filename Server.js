@@ -168,7 +168,7 @@ app.post('/preferences', function(req, res){
 		var preferences = req.body;
 		stockDB.deletePreferences(req.user.name);
 		for(var i = 0; i < preferences.length; i++){
-			stockDB.savePreferences(preferences[i].id, req.user.name);
+			stockDB.savePreferences(preferences[i].optionid, req.user.name);
 		}
 		res.send(201, null);
 	}else{
